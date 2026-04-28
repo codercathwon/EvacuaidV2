@@ -1,0 +1,8 @@
+{
+  "name": "EvacuAid",
+  "description": "Emergency SOS System",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}

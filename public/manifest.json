@@ -1,0 +1,16 @@
+{
+  "name": "EvacuAid",
+  "short_name": "EvacuAid",
+  "description": "Emergency SOS System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#C0392B",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
