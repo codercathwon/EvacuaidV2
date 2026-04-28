@@ -1,6 +1,6 @@
 import * as jose from 'jose';
 
-const jwtSecret = new TextEncoder().encode(process.env.SOS_JWT_SECRET!);
+const jwtSecret = new TextEncoder().encode(process.env.SOS_JWT_SECRET || 'default_insecure_secret_for_dev_mode_only');
 
 export interface SosPayload {
   userId?: string; // empty if anon
