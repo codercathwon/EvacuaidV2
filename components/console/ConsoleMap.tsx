@@ -22,10 +22,8 @@ export function ConsoleMap({ incidents, activeIncidentId, onMarkerClick, municip
   useEffect(() => {
     const pending = incidents.filter(i => i.status === 'pending');
     if (pending.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCenter({ lat: pending[0].lat, lng: pending[0].lng });
     } else if (incidents.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCenter({ lat: incidents[0].lat, lng: incidents[0].lng });
     }
   }, [incidents]);
