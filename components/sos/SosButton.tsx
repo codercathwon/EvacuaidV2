@@ -66,7 +66,6 @@ export function SosButton({ onActivate, disabled, onStatusChange }: SosButtonPro
             status === 'success'
               ? 'bg-[color:var(--accent-green)]'
               : 'bg-[color:var(--accent-red)] hover:bg-[color:var(--accent-red-glow)]',
-            status === 'error' ? 'animate-[evacuaid-slide-down_300ms_ease]' : '',
           ].join(' ')}
           style={{
             boxShadow:
