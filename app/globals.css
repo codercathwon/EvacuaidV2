@@ -2,13 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
+    --font-heading: 'Plus Jakarta Sans', ui-sans-serif, system-ui;
+    --font-sans: 'Inter', ui-sans-serif, system-ui;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -17,11 +18,6 @@
     --color-sidebar-primary: var(--sidebar-primary);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -50,136 +46,179 @@
 }
 
 :root {
-  /* Emergency Command palette (required variables) */
-  --bg-base: #0A0E1A;
-  --bg-surface: #111827;
-  --bg-elevated: #1F2937;
-  --accent-red: #DC2626;
-  --accent-red-glow: #EF4444;
-  --accent-amber: #F59E0B;
-  --accent-green: #10B981;
-  --accent-blue: #3B82F6;
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
-  --text-muted: #4B5563;
-  --border: #1F2937;
-  --border-bright: #374151;
+  /* EvacuAid v2 — Light design system */
+  --bg-base: #F8F9FA;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+
+  --accent-primary: #FF4B4B;
+  --accent-primary-glow: rgba(255, 75, 75, 0.12);
+  --accent-primary-soft: #FFF0F0;
+
+  --accent-green: #00C48C;
+  --accent-green-soft: #E8FBF5;
+
+  --accent-amber: #FFB547;
+  --accent-amber-soft: #FFF8ED;
+
+  --accent-blue: #4F8EF7;
+  --accent-blue-soft: #EEF4FF;
+
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+
+  --border: #F0F0F0;
+  --border-medium: #E5E7EB;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.10);
+  --shadow-red: 0 8px 32px rgba(255, 75, 75, 0.25);
+
+  --radius-custom: 16px;
+  --radius-custom-lg: 24px;
+  --radius-full: 100px;
 
   /* Map into shadcn/tailwind tokens */
   --background: var(--bg-base);
   --foreground: var(--text-primary);
-  --card: var(--bg-surface);
+  --card: var(--bg-card);
   --card-foreground: var(--text-primary);
-  --popover: var(--bg-elevated);
+  --popover: var(--bg-surface);
   --popover-foreground: var(--text-primary);
-  --primary: var(--accent-blue);
-  --primary-foreground: var(--text-primary);
-  --secondary: color-mix(in srgb, var(--bg-elevated) 85%, black);
+  --primary: var(--accent-primary);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--bg-base);
   --secondary-foreground: var(--text-primary);
-  --muted: color-mix(in srgb, var(--bg-surface) 88%, black);
+  --muted: #F3F4F6;
   --muted-foreground: var(--text-secondary);
-  --accent: color-mix(in srgb, var(--bg-elevated) 92%, black);
+  --accent: var(--bg-base);
   --accent-foreground: var(--text-primary);
-  --destructive: var(--accent-red);
-  --input: var(--border-bright);
-  --ring: var(--accent-blue);
-
-  --chart-1: var(--accent-blue);
-  --chart-2: var(--accent-green);
-  --chart-3: var(--accent-amber);
-  --chart-4: var(--accent-red);
-  --chart-5: var(--text-secondary);
+  --destructive: var(--accent-primary);
+  --input: var(--border-medium);
+  --ring: var(--accent-primary);
 
   --radius: 0.75rem;
+
   --sidebar: var(--bg-surface);
   --sidebar-foreground: var(--text-primary);
-  --sidebar-primary: var(--accent-blue);
-  --sidebar-primary-foreground: var(--text-primary);
-  --sidebar-accent: var(--bg-elevated);
+  --sidebar-primary: var(--accent-primary);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--bg-base);
   --sidebar-accent-foreground: var(--text-primary);
   --sidebar-border: var(--border);
-  --sidebar-ring: var(--accent-blue);
-}
-
-.dark {
-  /* Keep .dark identical to :root (no light theme) */
+  --sidebar-ring: var(--accent-primary);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground antialiased;
-    }
-  html {
-    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-}
-
-@layer base {
-  :where(h1, h2, h3, h4, h5, h6) {
-    font-family: 'Rajdhani', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    letter-spacing: 0.02em;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
-
-  /* Grain overlay on base background */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.03;
-    mix-blend-mode: overlay;
-    z-index: 0;
-    background-image:
-      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.08) 0 1px, transparent 1px 100%),
-      radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06) 0 1px, transparent 1px 100%),
-      radial-gradient(circle at 40% 80%, rgba(255,255,255,0.07) 0 1px, transparent 1px 100%);
-    background-size: 220px 220px, 260px 260px, 240px 240px;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-weight: 700;
   }
-
-  body > * {
-    position: relative;
-    z-index: 1;
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent-blue);
+    outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
   }
 
-  /* Thin dark scrollbars */
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--border-bright) transparent;
+    scrollbar-color: var(--border-medium) transparent;
   }
   *::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
   }
   *::-webkit-scrollbar-track {
     background: transparent;
   }
   *::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--bg-elevated) 80%, black);
-    border: 1px solid var(--border);
+    background: var(--border-medium);
     border-radius: 999px;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in srgb, var(--bg-elevated) 92%, black);
+    background: var(--text-muted);
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Rajdhani', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
   .font-ui {
-    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  .font-code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 }
 
+/* SOS button pulsing rings */
+@keyframes sos-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+/* Incident marker pulsing ring */
+@keyframes marker-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Slide down for banners/alerts */
+@keyframes slide-down {
+  from {
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Slide up for bottom sheets */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Keep legacy evacuaid-pulse-ring for backward compat */
 @keyframes evacuaid-pulse-ring {
   0% { transform: scale(1); opacity: 1; }
   100% { transform: scale(1.15); opacity: 0; }
@@ -188,4 +227,21 @@
 @keyframes evacuaid-slide-down {
   from { transform: translateY(-14px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* Shimmer for skeleton loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    var(--border-medium) 50%,
+    var(--border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }

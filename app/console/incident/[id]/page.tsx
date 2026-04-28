@@ -106,7 +106,7 @@ export default function IncidentDetailPage() {
                 <MapPin className="w-4 h-4 text-blue-400" />
                 {incident.lat.toFixed(5)}, {incident.lng.toFixed(5)}
               </p>
-              <p className="text-xs text-slate-500 mt-1">Accuracy: ±{Math.round(incident.accuracy_m)} meters</p>
+              <p className="text-xs text-slate-500 mt-1">Accuracy: ±{Math.round(incident.accuracy_m ?? 0)} meters</p>
             </div>
           </div>
 
