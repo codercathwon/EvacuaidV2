@@ -1,6 +1,6 @@
 'use client';
 import { useSosActivation } from '@/hooks/useSosActivation';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Check, AlertCircle } from 'lucide-react';
 
 interface SosButtonProps {
   onActivate: () => Promise<void>;
@@ -10,80 +10,110 @@ interface SosButtonProps {
 export function SosButton({ onActivate, disabled }: SosButtonProps) {
   const { isHolding, progress, status, errorMessage, handlers, reset } = useSosActivation(onActivate, 3000);
 
-  if (status === 'success') {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 animate-in fade-in zoom-in duration-300">
-        <div className="w-48 h-48 rounded-full bg-green-100 flex items-center justify-center">
-          <CheckCircle2 className="w-24 h-24 text-green-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-green-700">SOS Sent</h2>
-        <p className="text-muted-foreground">Help is on the way. Stay calm.</p>
-      </div>
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 animate-in fade-in zoom-in duration-300">
-        <div className="w-48 h-48 rounded-full bg-red-100 flex items-center justify-center">
-          <AlertCircle className="w-24 h-24 text-red-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-red-700">SOS Failed</h2>
-        <p className="text-red-500 font-medium">{errorMessage}</p>
-        <button 
-          onClick={reset}
-          className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative flex items-center justify-center w-64 h-64 touch-none">
-      {/* Progress ring background */}
-      <svg className="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none" viewBox="0 0 100 100">
-        <circle 
-          cx="50" cy="50" r="46" 
-          className="stroke-muted fill-none stroke-[8px]" 
-        />
-        {/* Progress ring stroke */}
-        <circle 
-          cx="50" cy="50" r="46" 
-          className="stroke-red-600 fill-none stroke-[8px] transition-all ease-linear"
-          style={{
-            strokeDasharray: 289.02, // 2 * PI * 46
-            strokeDashoffset: 289.02 - (289.02 * progress) / 100,
-            opacity: progress > 0 ? 1 : 0
-          }}
-        />
-      </svg>
-      
-      <button
-        {...handlers}
-        disabled={disabled || status === 'loading'}
-        className={`
-          z-10 w-48 h-48 rounded-full shadow-2xl flex items-center justify-center flex-col select-none
-          transition-transform duration-200
-          ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 active:scale-95 cursor-pointer'}
-          ${isHolding && !disabled ? 'scale-95 ring-8 ring-red-300/50' : ''}
-        `}
-        aria-label="Send Emergency SOS"
-        role="button"
-        aria-busy={status === 'loading'}
-      >
-        {status === 'loading' ? (
-          <Loader2 className="w-16 h-16 text-white animate-spin" />
-        ) : (
+    <div className="relative flex flex-col items-center justify-center touch-none select-none">
+      <div className="relative flex items-center justify-center w-[18rem] h-[18rem] sm:w-[20rem] sm:h-[20rem]">
+        {/* Pulse rings (two, staggered) */}
+        {status !== 'loading' && status !== 'success' && (
           <>
-            <span className="text-4xl font-black text-white tracking-widest uppercase">SOS</span>
-            <span className="text-red-100 font-medium text-sm mt-2 opacity-80 select-none">
-              HOLD 3 SEC
-            </span>
+            <div
+              aria-hidden
+              className="absolute inset-0 rounded-full border border-[color:var(--accent-red)]/30"
+              style={{ animation: 'evacuaid-pulse-ring 2s infinite' }}
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 rounded-full border border-[color:var(--accent-red)]/30"
+              style={{ animation: 'evacuaid-pulse-ring 2s infinite', animationDelay: '2.5s' }}
+            />
           </>
         )}
-      </button>
+
+        {/* Hold progress ring */}
+        <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" className="stroke-[color:var(--border)] fill-none stroke-[8px]" />
+          <circle
+            cx="50"
+            cy="50"
+            r="46"
+            className="fill-none stroke-[8px]"
+            style={{
+              stroke: status === 'success' ? 'var(--accent-green)' : 'var(--accent-red-glow)',
+              strokeDasharray: 289.02,
+              strokeDashoffset: 289.02 - (289.02 * progress) / 100,
+              opacity: progress > 0 ? 1 : 0,
+              transition: 'stroke-dashoffset 150ms ease, opacity 150ms ease',
+            }}
+          />
+        </svg>
+
+        <button
+          {...handlers}
+          disabled={disabled || status === 'loading'}
+          className={[
+            'relative z-10 min-w-[200px] min-h-[200px] w-[12.5rem] h-[12.5rem] rounded-full',
+            'shadow-[0_0_0_1px_var(--border-bright),0_30px_80px_rgba(0,0,0,0.55)]',
+            'flex items-center justify-center flex-col',
+            'transition-[transform,background-color,box-shadow] duration-[150ms] ease-out',
+            disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer active:scale-[0.98]',
+            isHolding && !disabled ? 'scale-[0.98]' : '',
+            status === 'success'
+              ? 'bg-[color:var(--accent-green)]'
+              : 'bg-[color:var(--accent-red)] hover:bg-[color:var(--accent-red-glow)]',
+            status === 'error' ? 'animate-[evacuaid-slide-down_300ms_ease]' : '',
+          ].join(' ')}
+          style={{
+            boxShadow:
+              isHolding && status !== 'success'
+                ? '0 0 0 10px color-mix(in srgb, var(--accent-red) 25%, transparent), 0 30px 80px rgba(0,0,0,0.55)'
+                : undefined,
+          }}
+          aria-label="Send Emergency SOS"
+          role="button"
+          aria-busy={status === 'loading'}
+        >
+          {status === 'loading' ? (
+            <Loader2 className="w-14 h-14 text-[color:var(--text-primary)] animate-spin" />
+          ) : status === 'success' ? (
+            <>
+              <div className="w-14 h-14 rounded-full bg-black/15 flex items-center justify-center">
+                <Check className="w-8 h-8 text-[color:var(--text-primary)]" />
+              </div>
+              <div className="mt-3 font-display font-bold text-[44px] leading-none text-[color:var(--text-primary)]">
+                SOS
+              </div>
+              <div className="mt-1 font-ui text-[10px] uppercase tracking-[0.24em] text-[color:var(--text-primary)]/85">
+                SENT
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="font-display font-bold text-[48px] leading-none text-[color:var(--text-primary)]">
+                SOS
+              </div>
+              <div className="mt-2 font-ui text-[10px] uppercase tracking-[0.26em] text-[color:var(--text-secondary)]">
+                HOLD 3 SEC
+              </div>
+            </>
+          )}
+        </button>
+      </div>
+
+      {status === 'error' && (
+        <div className="mt-5 w-full max-w-md text-center">
+          <div className="inline-flex items-center gap-2 text-[12px] text-[color:var(--accent-red-glow)]">
+            <AlertCircle className="w-4 h-4" />
+            <span className="font-ui">{errorMessage || 'Failed to submit SOS'}</span>
+          </div>
+          <button
+            type="button"
+            onClick={reset}
+            className="mt-3 text-[11px] uppercase tracking-[0.22em] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition-colors duration-[150ms] ease-out"
+          >
+            Reset
+          </button>
+        </div>
+      )}
     </div>
   );
 }
