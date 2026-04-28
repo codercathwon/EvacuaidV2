@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 
 export async function logAuditEvent(
   actorId: string | null,
@@ -6,8 +6,8 @@ export async function logAuditEvent(
   targetId: string | null,
   meta?: Record<string, any>
 ) {
-  const supabase = await createClient()
-  
+  const supabase = createAdminClient()
+
   await supabase.from('audit_events').insert({
     actor_id: actorId,
     event_type: eventType,
