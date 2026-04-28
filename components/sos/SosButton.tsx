@@ -1,14 +1,20 @@
 'use client';
+import { useEffect } from 'react';
 import { useSosActivation } from '@/hooks/useSosActivation';
 import { Loader2, Check, AlertCircle } from 'lucide-react';
 
 interface SosButtonProps {
   onActivate: () => Promise<void>;
   disabled?: boolean;
+  onStatusChange?: (status: 'idle' | 'holding' | 'loading' | 'success' | 'error') => void;
 }
 
-export function SosButton({ onActivate, disabled }: SosButtonProps) {
+export function SosButton({ onActivate, disabled, onStatusChange }: SosButtonProps) {
   const { isHolding, progress, status, errorMessage, handlers, reset } = useSosActivation(onActivate, 3000);
+
+  useEffect(() => {
+    onStatusChange?.(status);
+  }, [onStatusChange, status]);
 
   return (
     <div className="relative flex flex-col items-center justify-center touch-none select-none">
