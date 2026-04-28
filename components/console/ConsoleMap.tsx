@@ -4,6 +4,8 @@ import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps
 import { Incident } from '@/types';
 import { useMemo } from 'react';
 
+const DEFAULT_CENTER = { lat: 12.8797, lng: 121.774 };
+
 interface ConsoleMapProps {
   incidents: Incident[];
   activeIncidentId: string | null;
@@ -14,14 +16,12 @@ interface ConsoleMapProps {
 export function ConsoleMap({ incidents, activeIncidentId, onMarkerClick, municipalityGeoJSON }: ConsoleMapProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
   
-  // Default to Philippines if no incidents
-  const defaultCenter = { lat: 12.8797, lng: 121.7740 };
   const center = useMemo(() => {
     const pending = incidents.filter((i) => i.status === 'pending');
     if (pending.length > 0) return { lat: pending[0].lat, lng: pending[0].lng };
     if (incidents.length > 0) return { lat: incidents[0].lat, lng: incidents[0].lng };
-    return defaultCenter;
-  }, [defaultCenter, incidents]);
+    return DEFAULT_CENTER;
+  }, [incidents]);
 
   if (!apiKey) {
     return (
