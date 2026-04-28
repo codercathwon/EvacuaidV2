@@ -53,8 +53,7 @@ export async function POST(request: Request) {
         border_proximity: !!municipality.border_proximity,
         status: 'pending',
         payload_jwt: signed,
-      })
-      .select();
+      });
 
     if (insertError) {
       console.error('Incident insert error:', insertError);
