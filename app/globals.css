@@ -50,57 +50,55 @@
 }
 
 :root {
-    /* Emergency Command palette */
-    --bg-base: #0A0E1A;
-    --bg-surface: #111827;
-    --bg-elevated: #1F2937;
-    --accent-red: #DC2626;
-    --accent-red-glow: #EF4444;
-    --accent-amber: #F59E0B;
-    --accent-green: #10B981;
-    --accent-blue: #3B82F6;
-    --text-primary: #F9FAFB;
-    --text-secondary: #9CA3AF;
-    --text-muted: #4B5563;
-    --border: #1F2937;
-    --border-bright: #374151;
+  /* Emergency Command palette (required variables) */
+  --bg-base: #0A0E1A;
+  --bg-surface: #111827;
+  --bg-elevated: #1F2937;
+  --accent-red: #DC2626;
+  --accent-red-glow: #EF4444;
+  --accent-amber: #F59E0B;
+  --accent-green: #10B981;
+  --accent-blue: #3B82F6;
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #4B5563;
+  --border: #1F2937;
+  --border-bright: #374151;
 
-    /* Map palette into existing shadcn/tailwind tokens */
-    --background: var(--bg-base);
-    --foreground: var(--text-primary);
-    --card: var(--bg-surface);
-    --card-foreground: var(--text-primary);
-    --popover: var(--bg-elevated);
-    --popover-foreground: var(--text-primary);
-    --primary: var(--accent-blue);
-    --primary-foreground: var(--text-primary);
-    --secondary: color-mix(in srgb, var(--bg-elevated) 85%, black);
-    --secondary-foreground: var(--text-primary);
-    --muted: color-mix(in srgb, var(--bg-surface) 88%, black);
-    --muted-foreground: var(--text-secondary);
-    --accent: color-mix(in srgb, var(--bg-elevated) 92%, black);
-    --accent-foreground: var(--text-primary);
-    --destructive: var(--accent-red);
-    --border: var(--border);
-    --input: var(--border-bright);
-    --ring: var(--accent-blue);
-    --radius: 0.75rem;
+  /* Map into shadcn/tailwind tokens */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-elevated);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent-blue);
+  --primary-foreground: var(--text-primary);
+  --secondary: color-mix(in srgb, var(--bg-elevated) 85%, black);
+  --secondary-foreground: var(--text-primary);
+  --muted: color-mix(in srgb, var(--bg-surface) 88%, black);
+  --muted-foreground: var(--text-secondary);
+  --accent: color-mix(in srgb, var(--bg-elevated) 92%, black);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--accent-red);
+  --input: var(--border-bright);
+  --ring: var(--accent-blue);
 
-    /* Keep charts present but subdued */
-    --chart-1: var(--accent-blue);
-    --chart-2: var(--accent-green);
-    --chart-3: var(--accent-amber);
-    --chart-4: var(--accent-red);
-    --chart-5: var(--text-secondary);
+  --chart-1: var(--accent-blue);
+  --chart-2: var(--accent-green);
+  --chart-3: var(--accent-amber);
+  --chart-4: var(--accent-red);
+  --chart-5: var(--text-secondary);
 
-    --sidebar: var(--bg-surface);
-    --sidebar-foreground: var(--text-primary);
-    --sidebar-primary: var(--accent-blue);
-    --sidebar-primary-foreground: var(--text-primary);
-    --sidebar-accent: var(--bg-elevated);
-    --sidebar-accent-foreground: var(--text-primary);
-    --sidebar-border: var(--border);
-    --sidebar-ring: var(--accent-blue);
+  --radius: 0.75rem;
+  --sidebar: var(--bg-surface);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent-blue);
+  --sidebar-primary-foreground: var(--text-primary);
+  --sidebar-accent: var(--bg-elevated);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--accent-blue);
 }
 
 .dark {
@@ -121,7 +119,7 @@
 
 @layer base {
   :where(h1, h2, h3, h4, h5, h6) {
-    font-family: 'Rajdhani', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    font-family: 'Rajdhani', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     letter-spacing: 0.02em;
   }
 
