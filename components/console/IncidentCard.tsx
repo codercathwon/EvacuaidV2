@@ -67,9 +67,7 @@ export function IncidentCard({ incident, isActive, onClick, onAck, isNew }: Inci
 
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span
-              className="px-2 py-1 border border-[color:var(--border-bright)] bg-black/20 font-ui text-[10px] uppercase tracking-[0.18em] text-[color:var(--text-secondary)]"
-            >
+            <span className="px-2 py-1 border border-[color:var(--border-bright)] bg-black/20 font-ui text-[10px] uppercase tracking-[0.18em] text-[color:var(--text-secondary)]">
               {status}
             </span>
             {incident.border_proximity && (
