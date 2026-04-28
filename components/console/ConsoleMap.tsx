@@ -40,10 +40,6 @@ export function ConsoleMap({ incidents, activeIncidentId, onMarkerClick, municip
 
   return (
     <div className="w-full h-full relative">
-      <div className="absolute top-4 left-4 z-10 flex gap-2">
-        <span className="bg-zinc-950/80 backdrop-blur border border-zinc-700 px-3 py-1 rounded text-xs font-mono text-zinc-300 pointer-events-none">ConsoleMap.tsx</span>
-        <span className="bg-blue-500/10 text-blue-400 border border-blue-500/30 px-3 py-1 rounded text-xs pointer-events-none">Coverage Zone</span>
-      </div>
       <APIProvider apiKey={apiKey}>
         <Map
           defaultZoom={13}
@@ -59,11 +55,35 @@ export function ConsoleMap({ incidents, activeIncidentId, onMarkerClick, municip
               onClick={() => onMarkerClick(inc.id)}
               zIndex={inc.status === 'pending' ? 100 : 1}
             >
-              <Pin
-                background={inc.status === 'pending' ? '#ef4444' : '#71717a'}
-                borderColor={inc.status === 'pending' ? '#991b1b' : '#3f3f46'}
-                glyphColor="#ffffff"
-              />
+              {activeIncidentId === inc.id ? (
+                <div className="relative">
+                  <div
+                    aria-hidden
+                    className="absolute inset-0"
+                    style={{
+                      transform: 'translate(-50%, -50%)',
+                      left: '50%',
+                      top: '50%',
+                      width: 54,
+                      height: 54,
+                      border: '1px solid rgba(59,130,246,0.55)',
+                      animation: 'evacuaid-pulse-ring 2s infinite',
+                    }}
+                  />
+                  <Pin
+                    scale={1.2}
+                    background={inc.status === 'pending' ? '#DC2626' : '#6B7280'}
+                    borderColor={inc.status === 'pending' ? '#7F1D1D' : '#374151'}
+                    glyphColor="#ffffff"
+                  />
+                </div>
+              ) : (
+                <Pin
+                  background={inc.status === 'pending' ? '#DC2626' : '#6B7280'}
+                  borderColor={inc.status === 'pending' ? '#7F1D1D' : '#374151'}
+                  glyphColor="#ffffff"
+                />
+              )}
             </AdvancedMarker>
           ))}
         </Map>
