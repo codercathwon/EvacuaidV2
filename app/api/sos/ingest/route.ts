@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 import { resolveMunicipality } from '@/lib/routing';
 import { logAuditEvent } from '@/lib/audit';
-import { createAdminClient } from '@/lib/supabase/server';
 import { signSosPayload } from '@/lib/jwt';
 
 export async function POST(request: Request) {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'BAD_REQUEST' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
+    const supabase = await createClient();
 
     // Resolve municipality via PostGIS RPC
     const municipality = await resolveMunicipality(lat, lng);
