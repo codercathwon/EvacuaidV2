@@ -64,9 +64,16 @@ export default function SosPage() {
 
   }, [coords, router]);
 
+  const handleSosStatusChange = useCallback(
+    (next: 'idle' | 'holding' | 'loading' | 'success' | 'error') => {
+      setSosUiStatus(next);
+      if (next === 'success') setTimelineStep(0);
+    },
+    []
+  );
+
   useEffect(() => {
     if (sosUiStatus === 'success') {
-      setTimelineStep(0);
       const t1 = window.setTimeout(() => setTimelineStep(1), 500);
       const t2 = window.setTimeout(() => setTimelineStep(2), 1150);
       return () => {
@@ -106,7 +113,7 @@ export default function SosPage() {
             ) : (
               <SosButton
                 onActivate={executeSos}
-                onStatusChange={setSosUiStatus}
+                onStatusChange={handleSosStatusChange}
               />
             )}
 
