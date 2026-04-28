@@ -39,9 +39,12 @@ export async function POST(request: Request) {
 
     const signed = payload_jwt || (await signSosPayload({ lat, lng, accuracy, timestamp, device_fp }));
 
-    const { data: incident, error: insertError } = await supabase
+    const incidentId = crypto.randomUUID();
+
+    const { error: insertError } = await supabase
       .from('incidents')
       .insert({
+        id: incidentId,
         reporter_id: null,
         lat,
         lng,
@@ -51,8 +54,7 @@ export async function POST(request: Request) {
         status: 'pending',
         payload_jwt: signed,
       })
-      .select('id, status')
-      .single();
+      .select();
 
     if (insertError) {
       console.error('Incident insert error:', insertError);
@@ -60,13 +62,13 @@ export async function POST(request: Request) {
     }
 
     // Log audit event
-    await logAuditEvent(null, 'sos_sent', incident.id, body);
+    await logAuditEvent(null, 'sos_sent', incidentId, body);
 
     return NextResponse.json({
-      incident_id: incident.id,
+      incident_id: incidentId,
       municipality: muniRow.name,
       border_proximity: !!municipality.border_proximity,
-      status: incident.status,
+      status: 'pending',
     }, { status: 201 });
 
   } catch (error) {
