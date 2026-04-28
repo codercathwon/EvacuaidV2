@@ -2,7 +2,7 @@
 'use client';
 import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
 import { Incident } from '@/types';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 
 interface ConsoleMapProps {
   incidents: Incident[];
@@ -16,17 +16,12 @@ export function ConsoleMap({ incidents, activeIncidentId, onMarkerClick, municip
   
   // Default to Philippines if no incidents
   const defaultCenter = { lat: 12.8797, lng: 121.7740 };
-  const [center, setCenter] = useState(defaultCenter);
-
-  // Auto-pan to newest unacknowledged if array changes
-  useEffect(() => {
-    const pending = incidents.filter(i => i.status === 'pending');
-    if (pending.length > 0) {
-      setCenter({ lat: pending[0].lat, lng: pending[0].lng });
-    } else if (incidents.length > 0) {
-      setCenter({ lat: incidents[0].lat, lng: incidents[0].lng });
-    }
-  }, [incidents]);
+  const center = useMemo(() => {
+    const pending = incidents.filter((i) => i.status === 'pending');
+    if (pending.length > 0) return { lat: pending[0].lat, lng: pending[0].lng };
+    if (incidents.length > 0) return { lat: incidents[0].lat, lng: incidents[0].lng };
+    return defaultCenter;
+  }, [defaultCenter, incidents]);
 
   if (!apiKey) {
     return (
