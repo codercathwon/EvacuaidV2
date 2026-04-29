@@ -28,6 +28,8 @@ export interface Incident {
   status: IncidentStatus;
   incident_type: IncidentType;
   payload_jwt: string | null;
+  source?: 'sos' | 'chatbot' | 'manual';
+  chat_summary?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,12 +1,17 @@
 {
   "name": "EvacuAid",
   "short_name": "EvacuAid",
-  "description": "Emergency SOS System",
+  "description": "Emergency SOS & Dispatch System for Tagum City",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#C0392B",
+  "theme_color": "#FF4B4B",
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
     {
       "src": "/favicon.ico",
       "sizes": "64x64",

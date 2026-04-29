@@ -22,12 +22,10 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
-
-  // Only /admin routes require login — /console is open to guests
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user && request.nextUrl.pathname.startsWith('/admin')) {
+
+  const path = request.nextUrl.pathname;
+  if (!user && (path.startsWith('/admin') || path.startsWith('/console'))) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);

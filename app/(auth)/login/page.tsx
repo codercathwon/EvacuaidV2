@@ -102,7 +102,7 @@ function LoginForm() {
                   EvacuAid
                 </h1>
                 <p className="font-ui text-sm text-[var(--text-secondary)] mt-1">
-                  Responder & Admin Access
+                  Sign in to your account
                 </p>
               </div>
 
@@ -177,7 +177,7 @@ function LoginForm() {
                     </>
                   ) : (
                     <>
-                      Send Login Link
+                      Send login link
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -195,11 +195,11 @@ function LoginForm() {
                 className="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-full font-ui text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)]"
                 style={{ border: '1.5px solid var(--border-medium)' }}
               >
-                Continue as Public User
+                Continue without signing in →
               </Link>
 
               <p className="font-ui text-xs text-[var(--text-muted)] text-center mt-6">
-                By continuing you agree to our Terms of Service and Privacy Policy.
+                For authorized responders only.
               </p>
             </motion.div>
           ) : (

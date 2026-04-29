@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 85" fill="none">
+  <defs>
+    <linearGradient id="g" x1="55" y1="5" x2="55" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#6B0A0A"/>
+      <stop offset="45%"  stop-color="#C41818"/>
+      <stop offset="100%" stop-color="#F5C0C0"/>
+    </linearGradient>
+  </defs>
+  <!-- E: three rounded bars, stepping right edge inward -->
+  <rect x="5" y="8"  width="50" height="11" rx="5.5" fill="url(#g)"/>
+  <rect x="5" y="28" width="42" height="11" rx="5.5" fill="url(#g)"/>
+  <rect x="5" y="48" width="33" height="11" rx="5.5" fill="url(#g)"/>
+  <!-- A: two stroked legs meeting at apex -->
+  <line x1="72" y1="8"  x2="50" y2="69" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+  <line x1="72" y1="8"  x2="94" y2="69" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+</svg>

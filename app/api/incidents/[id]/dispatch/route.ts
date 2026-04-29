@@ -1,71 +1,54 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { logAuditEvent } from '@/lib/audit';
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 
 export async function POST(
-  request: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
-    const { notes } = body;
+    const body = await req.json();
+    const { notes } = body as { notes?: string };
 
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
     if (authError || !user) {
       return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
     }
 
-    const { data: incident, error: incidentError } = await supabase
+    const admin = createAdminClient();
+
+    const { data: incident } = await admin
       .from('incidents')
-      .select('municipality_id')
+      .select('status')
       .eq('id', id)
       .single();
 
-    if (incidentError || !incident) {
+    if (!incident) {
       return NextResponse.json({ error: 'NOT_FOUND' }, { status: 404 });
     }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, municipality_id')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || (profile.role !== 'admin' && profile.municipality_id !== incident.municipality_id)) {
-      return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
+    if (incident.status !== 'pending' && incident.status !== 'acknowledged') {
+      return NextResponse.json({ error: 'CONFLICT', current_status: incident.status }, { status: 409 });
     }
 
-    const { error: updateError } = await supabase
-      .from('incidents')
-      .update({ status: 'dispatched' })
-      .eq('id', id);
+    await admin.from('incidents').update({ status: 'dispatched' }).eq('id', id);
 
-    if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
-    }
-
-    const { data: dispatchData, error: dispatchError } = await supabase
+    const { data: dispatch } = await admin
       .from('dispatch_actions')
-      .insert({
-        incident_id: id,
-        operator_id: user.id,
-        notes: notes || null
-      })
+      .insert({ incident_id: id, operator_id: user.id, notes: notes || null })
       .select('dispatched_at')
       .single();
 
-    if (dispatchError) {
-      return NextResponse.json({ error: dispatchError.message }, { status: 500 });
-    }
+    await admin.from('audit_events').insert({
+      actor_id: user.id,
+      event_type: 'dispatch',
+      target_id: id,
+      meta: { notes },
+    });
 
-    await logAuditEvent(user.id, 'dispatch', id, { notes });
-
-    return NextResponse.json({ dispatched_at: dispatchData.dispatched_at }, { status: 200 });
-  } catch (error) {
-    console.error('Dispatch error:', error);
-    return NextResponse.json({ error: 'INTERNAL_SERVER_ERROR' }, { status: 500 });
+    return NextResponse.json({ success: true, dispatched_at: dispatch?.dispatched_at, status: 'dispatched' });
+  } catch (e) {
+    console.error('Dispatch error:', e);
+    return NextResponse.json({ error: 'INTERNAL' }, { status: 500 });
   }
 }

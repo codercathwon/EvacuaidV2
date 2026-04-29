@@ -7,7 +7,7 @@ import { Incident } from '@/types';
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
-function playBellSound() {
+export function playBellSound() {
   try {
     const AudioCtx: typeof window.AudioContext =
       window.AudioContext ||
@@ -106,19 +106,24 @@ export function useIncidentChannel(
 export function useAllIncidentsChannel(
   onNew: (incident: Incident) => void,
   onUpdate: (incident: Incident) => void,
-  onConnectionChange?: (status: ConnectionStatus) => void
+  onConnectionChange?: (status: ConnectionStatus) => void,
+  enabled = true
 ) {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onNewRef = useRef(onNew);
   const onUpdateRef = useRef(onUpdate);
   const onConnectionChangeRef = useRef(onConnectionChange);
+  const enabledRef = useRef(enabled);
 
   useEffect(() => { onNewRef.current = onNew; }, [onNew]);
   useEffect(() => { onUpdateRef.current = onUpdate; }, [onUpdate]);
   useEffect(() => { onConnectionChangeRef.current = onConnectionChange; }, [onConnectionChange]);
+  useEffect(() => { enabledRef.current = enabled; }, [enabled]);
 
   const subscribe = useCallback(() => {
+    if (!enabledRef.current) return;
+
     const supabase = createClient();
     onConnectionChangeRef.current?.('connecting');
 
@@ -133,6 +138,7 @@ export function useAllIncidentsChannel(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'incidents' },
         (payload) => {
+          if (!enabledRef.current) return;
           playBellSound();
           onNewRef.current(payload.new as Incident);
         }
@@ -141,6 +147,7 @@ export function useAllIncidentsChannel(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'incidents' },
         (payload) => {
+          if (!enabledRef.current) return;
           onUpdateRef.current(payload.new as Incident);
         }
       )
@@ -161,6 +168,15 @@ export function useAllIncidentsChannel(
   }, []);
 
   useEffect(() => {
+    if (!enabled) {
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+      const supabase = createClient();
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      return;
+    }
     subscribe();
     return () => {
       if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
@@ -170,5 +186,5 @@ export function useAllIncidentsChannel(
         channelRef.current = null;
       }
     };
-  }, [subscribe]);
+  }, [subscribe, enabled]);
 }
