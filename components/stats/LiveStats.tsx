@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, Clock, CheckCircle, Zap } from 'lucide-react';
+import { Activity, Clock, CheckCircle, Zap, Shield } from 'lucide-react';
 import { useLiveStats } from '@/hooks/useLiveStats';
 
 interface LiveStatsProps {
@@ -47,7 +47,14 @@ export function LiveStats({ className = '', variant = 'pills' }: LiveStatsProps)
         <Stat
           icon={<CheckCircle className="w-4 h-4" style={{ color: 'var(--accent-green)' }} />}
           value={stats.resolved_today}
-          label="resolved"
+          label="resolved (24h)"
+          title="Incidents resolved in the last 24 hours"
+        />
+        <Divider />
+        <Stat
+          icon={<Shield className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />}
+          value={77}
+          label="safe places"
         />
       </div>
     );
@@ -72,9 +79,17 @@ export function LiveStats({ className = '', variant = 'pills' }: LiveStatsProps)
       <StatPill
         icon={<CheckCircle className="w-3.5 h-3.5" />}
         value={stats.resolved_today}
-        label="resolved"
+        label="resolved (24h)"
         color="var(--accent-green)"
         soft="var(--accent-green-soft)"
+        title="Incidents resolved in the last 24 hours"
+      />
+      <StatPill
+        icon={<Shield className="w-3.5 h-3.5" />}
+        value={77}
+        label="safe places"
+        color="var(--accent-primary)"
+        soft="var(--accent-primary-soft)"
       />
     </div>
   );
@@ -89,14 +104,16 @@ function Stat({
   value,
   label,
   badge,
+  title,
 }: {
   icon: React.ReactNode;
   value: number | string;
   label: string;
   badge?: boolean;
+  title?: string;
 }) {
   return (
-    <div className="flex items-center gap-2 min-w-fit">
+    <div className="flex items-center gap-2 min-w-fit" title={title}>
       {icon}
       <div>
         <div className="flex items-center gap-1">
@@ -124,12 +141,14 @@ function StatPill({
   label,
   color,
   soft,
+  title,
 }: {
   icon: React.ReactNode;
   value: number | string;
   label: string;
   color: string;
   soft: string;
+  title?: string;
 }) {
   return (
     <div
@@ -139,6 +158,7 @@ function StatPill({
         border: `1px solid ${color}30`,
         boxShadow: 'var(--shadow-sm)',
       }}
+      title={title}
     >
       <span style={{ color }}>{icon}</span>
       <span className="font-display font-bold text-sm text-[var(--text-primary)]">{value}</span>

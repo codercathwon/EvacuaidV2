@@ -216,11 +216,34 @@ export default function SosPage() {
           {/* Hero */}
           <section className="px-4">
             <h1 style={{ lineHeight: 1.2, letterSpacing: '-0.01em', margin: 0 }}>
-              <span className="block font-serif" style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', color: 'var(--text-primary)', fontWeight: 400 }}>
+              <span
+                className="block"
+                style={{
+                  fontSize: 'clamp(2rem, 5vw, 2.75rem)',
+                  color: 'var(--text-primary)',
+                  fontWeight: 400,
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+                }}
+              >
                 You evacuate,
               </span>
-              <span className="block font-serif" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', color: 'var(--text-primary)', fontWeight: 400, fontStyle: 'italic' }}>
-                we show aid.
+              <span
+                className="block"
+                style={{
+                  fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+                  fontWeight: 300,
+                  fontStyle: 'italic',
+                  letterSpacing: '-0.02em',
+                  color: '#FF4B4B',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+                }}
+              >
+                <span style={{
+                  textDecoration: 'underline',
+                  textDecorationColor: 'rgba(255,75,75,0.4)',
+                  textUnderlineOffset: '4px',
+                  textDecorationThickness: '1px',
+                }}>we show aid.</span>
               </span>
             </h1>
             <p className="mt-3 font-ui text-base text-[var(--text-secondary)] leading-relaxed" style={{ maxWidth: 400 }}>

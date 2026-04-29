@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Sign In',
+  title: 'EvacuAid',
 };
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {

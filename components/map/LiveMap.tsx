@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useApiIsLoaded } from '@vis.gl/react-google-maps';
 import { Incident } from '@/types';
+import { Shield } from 'lucide-react';
 
 const TAGUM_BOUNDARY: google.maps.LatLngLiteral[] = [
   { lat: 7.20, lng: 125.60 },
@@ -36,7 +37,6 @@ const INCIDENT_TYPE_LABELS: Record<string, string> = {
   other:    'Other / Flood',
 };
 
-/* Evacuation/refuge location types relevant to Philippines disasters */
 const EVACUATION_SEARCHES: Array<{ keyword: string; label: string; color: string }> = [
   { keyword: 'hospital',          label: 'Hospital',          color: '#EF4444' },
   { keyword: 'barangay hall',     label: 'Barangay Hall',     color: '#22C55E' },
@@ -45,6 +45,28 @@ const EVACUATION_SEARCHES: Array<{ keyword: string; label: string; color: string
   { keyword: 'DRRMO',             label: 'DRRMO Office',      color: '#F97316' },
   { keyword: 'covered court',     label: 'Covered Court',     color: '#A855F7' },
 ];
+
+const SAFETY_ICONS: Record<string, { color: string; label: string; scale: number }> = {
+  hospital:          { color: '#FF4B4B', label: 'Hospital',          scale: 7 },
+  police:            { color: '#1A56DB', label: 'Police',            scale: 7 },
+  fire_station:      { color: '#E65100', label: 'Fire Station',      scale: 7 },
+  evacuation_center: { color: '#00C48C', label: 'Evacuation Center', scale: 7 },
+  barangay_hall:     { color: '#7F77DD', label: 'Barangay Hall',     scale: 6 },
+  school:            { color: '#EF9F27', label: 'School',            scale: 6 },
+  church:            { color: '#888780', label: 'Church',            scale: 5 },
+  health_center:     { color: '#FF6B9D', label: 'Health Center',     scale: 6 },
+};
+
+interface SafetyPlace {
+  id: string;
+  name: string;
+  category: string;
+  address: string | null;
+  lat: number;
+  lng: number;
+  phone: string | null;
+  is_active: boolean;
+}
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371000;
@@ -68,6 +90,7 @@ interface LiveMapProps {
   showHospitalRoute?: boolean;
   userCoords?: { lat: number; lng: number } | null;
   onHospitalFound?: (name: string, distanceText: string, type?: string) => void;
+  showSafetyPlaces?: boolean;
 }
 
 export function LiveMap({
@@ -81,6 +104,7 @@ export function LiveMap({
   showHospitalRoute = false,
   userCoords = null,
   onHospitalFound,
+  showSafetyPlaces: showSafetyProp = true,
 }: LiveMapProps) {
   const isApiLoaded = useApiIsLoaded();
   const mapRef                   = useRef<HTMLDivElement>(null);
@@ -93,8 +117,13 @@ export function LiveMap({
   const routePolylineRef         = useRef<google.maps.Polyline | null>(null);
   const evacuationMarkersRef     = useRef<google.maps.Marker[]>([]);
   const evacuationInfoWindowsRef = useRef<google.maps.InfoWindow[]>([]);
+  const safetyMarkersRef         = useRef<google.maps.Marker[]>([]);
+  const safetyInfoWindowsRef     = useRef<google.maps.InfoWindow[]>([]);
   const onHospitalFoundRef       = useRef(onHospitalFound);
   onHospitalFoundRef.current     = onHospitalFound;
+
+  const [safetyPlaces, setSafetyPlaces] = useState<SafetyPlace[]>([]);
+  const [showSafetyLayer, setShowSafetyLayer] = useState(showSafetyProp);
 
   const getMarkerIcon = useCallback(
     (incident: Incident, selected: boolean): google.maps.Symbol => {
@@ -110,6 +139,14 @@ export function LiveMap({
     },
     []
   );
+
+  /* ── Fetch safety places on mount ── */
+  useEffect(() => {
+    fetch('/api/safety-places')
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setSafetyPlaces(data); })
+      .catch(() => {});
+  }, []);
 
   /* ── Initialize map ── */
   useEffect(() => {
@@ -152,7 +189,7 @@ export function LiveMap({
     }
   }, [isApiLoaded, showBoundary]);
 
-  /* ── Sync incident markers with hover info windows ── */
+  /* ── Sync incident markers ── */
   useEffect(() => {
     if (!isApiLoaded || !googleMapRef.current) return;
     const map = googleMapRef.current;
@@ -250,6 +287,59 @@ export function LiveMap({
     });
   }, [isApiLoaded, showMyLocation]);
 
+  /* ── Safety places markers ── */
+  useEffect(() => {
+    if (!isApiLoaded || !googleMapRef.current) return;
+    const map = googleMapRef.current;
+
+    safetyMarkersRef.current.forEach((m) => m.setMap(null));
+    safetyMarkersRef.current = [];
+    safetyInfoWindowsRef.current.forEach((iw) => iw.close());
+    safetyInfoWindowsRef.current = [];
+
+    if (!showSafetyLayer || safetyPlaces.length === 0) return;
+
+    safetyPlaces.forEach((place) => {
+      const cfg = SAFETY_ICONS[place.category] ?? { color: '#9CA3AF', label: place.category, scale: 6 };
+
+      const marker = new google.maps.Marker({
+        position: { lat: place.lat, lng: place.lng },
+        map,
+        icon: {
+          path:         google.maps.SymbolPath.CIRCLE,
+          scale:        cfg.scale,
+          fillColor:    cfg.color,
+          fillOpacity:  0.85,
+          strokeColor:  '#FFFFFF',
+          strokeWeight: 1.5,
+        },
+        title:  place.name,
+        zIndex: 50,
+      });
+
+      const phoneHtml = place.phone
+        ? `<div style="margin-top:3px"><a href="tel:${place.phone}" style="color:#1A56DB;text-decoration:none;font-size:11px">📞 ${place.phone}</a></div>`
+        : '';
+      const infoContent = `
+        <div style="font-family:system-ui,sans-serif;padding:4px 2px;font-size:12px;line-height:1.5;min-width:150px;max-width:200px">
+          <div style="font-weight:700;color:#111827;margin-bottom:2px">${place.name}</div>
+          <div style="display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:600;color:#fff;background:${cfg.color};margin-bottom:3px">${cfg.label}</div>
+          ${place.address ? `<div style="color:#6B7280;font-size:11px">${place.address}</div>` : ''}
+          ${phoneHtml}
+        </div>
+      `;
+      const infoWindow = new google.maps.InfoWindow({ content: infoContent });
+
+      marker.addListener('click', () => {
+        safetyInfoWindowsRef.current.forEach((iw) => iw.close());
+        infoWindow.open(map, marker);
+      });
+
+      safetyMarkersRef.current.push(marker);
+      safetyInfoWindowsRef.current.push(infoWindow);
+    });
+  }, [isApiLoaded, safetyPlaces, showSafetyLayer]);
+
   /* ── Multi-type evacuation routing ── */
   const userLat = userCoords?.lat ?? null;
   const userLng = userCoords?.lng ?? null;
@@ -278,7 +368,6 @@ export function LiveMap({
 
     type FoundItem = { place: google.maps.places.PlaceResult; label: string; color: string };
 
-    /* Run all location type searches in parallel */
     const searchPromises = EVACUATION_SEARCHES.map(({ keyword, label, color }) =>
       new Promise<FoundItem[]>((resolve) => {
         svc.nearbySearch(
@@ -301,7 +390,6 @@ export function LiveMap({
       const flat = allResults.flat().filter((item) => !!item.place.geometry?.location);
       if (!flat.length) return;
 
-      /* Find the absolute nearest across all types */
       let nearest     = flat[0];
       let nearestDist = Infinity;
       flat.forEach((item) => {
@@ -310,7 +398,6 @@ export function LiveMap({
         if (d < nearestDist) { nearestDist = d; nearest = item; }
       });
 
-      /* Place markers for every found location */
       flat.forEach((item) => {
         const loc       = item.place.geometry!.location!;
         const isNearest = item === nearest;
@@ -345,7 +432,6 @@ export function LiveMap({
         evacuationInfoWindowsRef.current.push(infoWindow);
       });
 
-      /* Route to nearest — custom dashed Polyline, no DirectionsRenderer */
       const dest = nearest.place.geometry!.location!;
       new google.maps.DirectionsService().route(
         { origin, destination: dest, travelMode: google.maps.TravelMode.DRIVING },
@@ -405,10 +491,52 @@ export function LiveMap({
   }
 
   return (
-    <div
-      ref={mapRef}
-      style={{ height, width: '100%' }}
-      className={className}
-    />
+    <div style={{ height, width: '100%', position: 'relative' }} className={className}>
+      <div ref={mapRef} style={{ height: '100%', width: '100%' }} />
+
+      {/* Safety layer toggle */}
+      <button
+        type="button"
+        onClick={() => setShowSafetyLayer((v) => !v)}
+        title={showSafetyLayer ? 'Hide safety places' : 'Show safety places'}
+        className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full font-ui text-xs font-medium transition-all z-10"
+        style={{
+          background:  showSafetyLayer ? '#FF4B4B' : 'rgba(255,255,255,0.95)',
+          color:       showSafetyLayer ? '#fff' : '#6B7280',
+          boxShadow:   '0 1px 4px rgba(0,0,0,0.15)',
+          border:      showSafetyLayer ? 'none' : '1px solid #E5E7EB',
+        }}
+      >
+        <Shield style={{ width: 12, height: 12 }} />
+        Safety places
+      </button>
+
+      {/* Legend */}
+      {showSafetyLayer && (
+        <div
+          className="absolute bottom-8 left-3 flex items-center gap-2.5 px-3 py-2 rounded-full z-10"
+          style={{
+            background:     'rgba(255,255,255,0.92)',
+            boxShadow:      '0 1px 4px rgba(0,0,0,0.12)',
+            border:         '1px solid #E5E7EB',
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          <LegendDot color="#FF4B4B" label="Incidents" />
+          <LegendDot color="#1A56DB" label="Police" />
+          <LegendDot color="#FF4B4B" label="Hospital" />
+          <LegendDot color="#00C48C" label="Shelters" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LegendDot({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex items-center gap-1">
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: color, display: 'inline-block', flexShrink: 0 }} />
+      <span style={{ fontFamily: 'system-ui,sans-serif', fontSize: 10, color: '#6B7280', whiteSpace: 'nowrap' }}>{label}</span>
+    </div>
   );
 }

@@ -24,18 +24,21 @@ export function useLiveStats(): IncidentStats {
       return;
     }
 
-    // Fallback: compute from incidents table directly
+    // Fallback: compute from incidents table directly (rolling 24h window)
+    const since = new Date(Date.now() - 86400000).toISOString();
     const { data: incidents } = await supabase
       .from('incidents')
-      .select('status, created_at')
-      .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
+      .select('status, created_at, updated_at')
+      .gte('created_at', since);
 
     if (incidents) {
       const total_today = incidents.length;
       const active_now = incidents.filter(
-        (i) => i.status === 'pending' || i.status === 'acknowledged'
+        (i) => i.status === 'pending' || i.status === 'acknowledged' || i.status === 'dispatched'
       ).length;
-      const resolved_today = incidents.filter((i) => i.status === 'resolved').length;
+      const resolved_today = incidents.filter(
+        (i) => ['resolved', 'cancelled'].includes(i.status) && i.updated_at > since
+      ).length;
       setStats({ total_today, active_now, resolved_today, avg_ack_seconds: null });
     }
   }, []);

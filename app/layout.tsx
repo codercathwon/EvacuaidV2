@@ -9,10 +9,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
-  title: {
-    default: 'EvacuAid — Emergency Response System',
-    template: '%s — EvacuAid',
-  },
+  title: 'EvacuAid',
   description: 'Emergency response system for Tagum City, Davao del Norte, Philippines.',
   keywords: ['emergency', 'SOS', 'Tagum City', 'emergency response', 'DRRMO', 'evacuation', 'Philippines'],
   manifest: '/manifest.json',

@@ -151,6 +151,47 @@ export default function ConsolePage() {
     if (data) setIncidents(data as Incident[]);
   }, []);
 
+  const handleResolveIncident = useCallback(async (id: string) => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/incidents/${id}/resolve`, { method: 'POST' });
+      if (res.ok) {
+        setIncidents((prev) => prev.map((i) => i.id === id ? { ...i, status: 'resolved' as const } : i));
+        toast.success('Incident resolved');
+      } else {
+        toast.error('Failed to resolve incident');
+      }
+    } finally { setActionLoading(false); }
+  }, []);
+
+  const handleResolveDispatched = useCallback(async () => {
+    const dispatchedIds = incidents.filter((i) => i.status === 'dispatched').map((i) => i.id);
+    if (dispatchedIds.length === 0) return;
+    if (!window.confirm(`Mark ${dispatchedIds.length} dispatched incident(s) as resolved?`)) return;
+    const res = await fetch('/api/incidents/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'resolve', ids: dispatchedIds }),
+    });
+    if (res.ok) {
+      setIncidents((prev) => prev.map((i) =>
+        dispatchedIds.includes(i.id) ? { ...i, status: 'resolved' as const } : i
+      ));
+      toast.success(`${dispatchedIds.length} incident(s) marked resolved`);
+    } else {
+      toast.error('Failed to resolve incidents');
+    }
+  }, [incidents]);
+
+  const handleClearDone = useCallback(() => {
+    const doneIds = incidents
+      .filter((i) => i.status === 'resolved' || i.status === 'cancelled')
+      .map((i) => i.id);
+    if (doneIds.length === 0) return;
+    setIncidents((prev) => prev.filter((i) => !doneIds.includes(i.id)));
+    toast.success(`${doneIds.length} resolved incident(s) cleared from view`);
+  }, [incidents]);
+
   const filteredIncidents = incidents.filter((i) => {
     if (filter === 'pending') return i.status === 'pending';
     if (filter === 'active')  return i.status === 'acknowledged' || i.status === 'dispatched';
@@ -328,6 +369,30 @@ export default function ConsolePage() {
                 </button>
               ))}
             </div>
+            {(dispCount > 0 || tabCounts.done > 0) && (
+              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                {dispCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleResolveDispatched}
+                    className="px-2.5 py-1 rounded-full font-ui text-xs font-medium transition-colors hover:bg-[var(--accent-green-soft)]"
+                    style={{ color: 'var(--accent-green)', border: '1px solid var(--border-medium)' }}
+                  >
+                    Resolve dispatched ({dispCount})
+                  </button>
+                )}
+                {tabCounts.done > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClearDone}
+                    className="px-2.5 py-1 rounded-full font-ui text-xs font-medium transition-colors hover:bg-[var(--bg-base)]"
+                    style={{ color: 'var(--text-muted)', border: '1px solid var(--border-medium)' }}
+                  >
+                    Clear done
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-1.5">
@@ -464,6 +529,18 @@ export default function ConsolePage() {
                   >
                     <Truck className="w-4 h-4" />
                     Dispatch
+                  </button>
+                )}
+                {activeIncident.status === 'dispatched' && (
+                  <button
+                    type="button"
+                    disabled={actionLoading}
+                    onClick={() => handleResolveIncident(activeIncident.id)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full font-ui text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
+                    style={{ color: 'var(--accent-green)', border: '1px solid var(--accent-green)', background: 'var(--accent-green-soft)' }}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Mark resolved
                   </button>
                 )}
                 <button
@@ -653,6 +730,13 @@ export default function ConsolePage() {
                           className="flex-1 py-2.5 rounded-full font-ui text-sm font-medium text-white min-h-[44px]"
                           style={{ background: 'var(--accent-blue)' }}>
                           Dispatch
+                        </button>
+                      )}
+                      {activeIncident.status === 'dispatched' && (
+                        <button type="button" disabled={actionLoading} onClick={() => handleResolveIncident(activeIncident.id)}
+                          className="flex-1 py-2.5 rounded-full font-ui text-sm font-medium min-h-[44px]"
+                          style={{ color: 'var(--accent-green)', border: '1px solid var(--accent-green)', background: 'var(--accent-green-soft)' }}>
+                          Mark resolved
                         </button>
                       )}
                     </div>
