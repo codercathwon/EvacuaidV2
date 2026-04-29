@@ -217,10 +217,10 @@ export default function SosPage() {
           <section className="px-4">
             <h1 style={{ lineHeight: 1.2, letterSpacing: '-0.01em', margin: 0 }}>
               <span className="block font-serif" style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', color: 'var(--text-primary)', fontWeight: 400 }}>
-                Emergency Help,
+                You evacuate,
               </span>
               <span className="block font-serif" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', color: 'var(--text-primary)', fontWeight: 400, fontStyle: 'italic' }}>
-                One Hold Away.
+                we show aid.
               </span>
             </h1>
             <p className="mt-3 font-ui text-base text-[var(--text-secondary)] leading-relaxed" style={{ maxWidth: 400 }}>
