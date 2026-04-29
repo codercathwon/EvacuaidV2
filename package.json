@@ -19,6 +19,7 @@
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.0",
     "@types/google.maps": "^3.64.0",
+    "@vercel/speed-insights": "^2.0.0",
     "@vis.gl/react-google-maps": "^1.8.3",
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
