@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import { SplashScreen } from '@/components/layout/SplashScreen';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const viewport: Viewport = {
   themeColor: '#FF4B4B',
@@ -50,6 +51,7 @@ export default function RootLayout({
         <SplashScreen />
         {children}
         <Toaster position="bottom-right" richColors />
+        <SpeedInsights />
       </body>
     </html>
   );
