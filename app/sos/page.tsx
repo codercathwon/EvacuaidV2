@@ -215,35 +215,29 @@ export default function SosPage() {
         >
           {/* Hero */}
           <section className="px-4">
-            <h1 style={{ lineHeight: 1.2, letterSpacing: '-0.01em', margin: 0 }}>
+            <h1 style={{ lineHeight: 1.15, margin: 0 }}>
               <span
-                className="block"
+                className="block font-display"
                 style={{
-                  fontSize: 'clamp(2rem, 5vw, 2.75rem)',
+                  fontSize: 'clamp(2rem, 5vw, 2.8rem)',
+                  fontWeight: 600,
+                  letterSpacing: '-0.03em',
                   color: 'var(--text-primary)',
-                  fontWeight: 400,
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
                 }}
               >
                 You evacuate,
               </span>
               <span
-                className="block"
+                className="block font-serif"
                 style={{
-                  fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-                  fontWeight: 300,
+                  fontSize: 'clamp(2rem, 5vw, 2.8rem)',
+                  fontWeight: 400,
                   fontStyle: 'italic',
-                  letterSpacing: '-0.02em',
+                  letterSpacing: '-0.01em',
                   color: '#FF4B4B',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
                 }}
               >
-                <span style={{
-                  textDecoration: 'underline',
-                  textDecorationColor: 'rgba(255,75,75,0.4)',
-                  textUnderlineOffset: '4px',
-                  textDecorationThickness: '1px',
-                }}>we show aid.</span>
+                we show aid.
               </span>
             </h1>
             <p className="mt-3 font-ui text-base text-[var(--text-secondary)] leading-relaxed" style={{ maxWidth: 400 }}>
@@ -349,6 +343,11 @@ export default function SosPage() {
             )}
           </AnimatePresence>
 
+          {/* AI Emergency Guide — inline card */}
+          <section className="px-4">
+            <EmergencyChat variant="inline" />
+          </section>
+
           {/* Mobile map section */}
           <section id="map-section" className="px-4 lg:hidden">
             <div className="flex items-center justify-between mb-3">
@@ -411,8 +410,6 @@ export default function SosPage() {
           </div>
         </div>
       </div>
-
-      <EmergencyChat />
 
       {/* ── Mobile bottom nav ─────────────────────────── */}
       <nav
